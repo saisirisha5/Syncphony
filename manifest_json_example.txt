@@ -1,0 +1,35 @@
+## Create a manifest.json file in the below format
+
+{
+  "manifest_version": 3,
+  "name": "Syncphony",
+  "version": "1.0",
+  "description": "Sync your Spotify playlists to YouTube Music effortlessly.",
+  "permissions": [
+    "identity",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
+  "oauth2": {
+    "client_id": "GOOGLE_CLIENT_ID",
+    "scopes": ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.force-ssl"]
+  },
+  "host_permissions": [
+    "https://accounts.google.com/*",
+    "https://www.googleapis.com/*",
+    "https://accounts.spotify.com/*",
+    "https://api.spotify.com/*"
+  ],
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [{
+    "resources": ["secrets.js"],
+    "matches": ["<all_urls>"]
+  }]
+}
