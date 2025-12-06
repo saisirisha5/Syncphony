@@ -301,15 +301,29 @@ function fetchSpotifyPlaylists(token) {
         syncAllBtn.onclick = () => syncAllPlaylists(playlists);
       }
       
-      // Render playlist buttons
+      // Render playlist rows in new UI
       playlists.forEach((playlist) => {
-        const btn = document.createElement("button");
-        btn.textContent = `${playlist.name} - Sync`;
-        btn.onclick = () => syncPlaylistToYouTube(playlist.id, playlist.name, () => {
+        const row = document.createElement("div");
+        row.className = "playlist-item";
+
+        // playlist name
+        const name = document.createElement("span");
+        name.className = "playlist-name";
+        name.textContent = playlist.name;
+
+        // sync button
+        const syncBtn = document.createElement("button");
+        syncBtn.className = "sync-btn";
+        syncBtn.textContent = "Sync";
+        syncBtn.onclick = () => syncPlaylistToYouTube(playlist.id, playlist.name, () => {
           console.log(`Finished syncing ${playlist.name}`);
         });
-        container.appendChild(btn);
+
+        row.appendChild(name);
+        row.appendChild(syncBtn);
+        container.appendChild(row);
       });
+
     })
     .catch(err => {
       console.error("Failed to fetch playlists:", err);
@@ -660,18 +674,6 @@ function checkLoginStatus() {
   });
 }
 
-// Add clear tokens button for debugging
-function addClearButton() {
-  const clearBtn = document.createElement("button");
-  clearBtn.textContent = "Clear Tokens";
-  clearBtn.onclick = clearTokens;
-  clearBtn.style.marginTop = "10px";
-  document.body.appendChild(clearBtn);
-}
-
-// Add clear button for development
-addClearButton();
-
 // Add this function at the end of the file for manual testing
 function manualTokenTest() {
   chrome.storage.local.get(['spotifyAccessToken'], function(result) {
@@ -788,3 +790,13 @@ function handleAuthorizationCode(code) {
     alert(`Authorization code received and stored.\n\nCode: ${code.substring(0, 10)}...\n\nYou need to implement token exchange or configure your Spotify app for implicit flow.`);
   });
 }
+
+//Logout - clear tokens
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      clearTokens();
+    });
+  }
+});

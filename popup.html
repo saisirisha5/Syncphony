@@ -6,18 +6,33 @@
 </head>
 <body>
   <div class="container">
-    <h2>Syncphony</h2>
+
+    <div class="logo-block">
+      <img src="icons/Syncphony.jpg" class="sync-logo" alt="Syncphony Icon" />
+
+    </div>
+
+
     <div id="status" class="status">Checking login status...</div>
+
     <div id="progressBarContainer" class="progress-bar-container" style="display:none;">
       <div id="progressBar" class="progress-bar"></div>
     </div>
+
     <div class="login-buttons">
       <button id="loginSpotify" class="login-btn spotify-btn">Login with Spotify</button>
       <button id="loginYouTube" class="login-btn youtube-btn">Login with YouTube</button>
     </div>
+
+    <button id="syncAllBtn" class="sync-all-btn">Sync All Playlists</button>
+
     <div id="playlistContainer" class="playlist-container"></div>
+
+   <button id="logoutBtn" class="logout-btn">Logout</button>
+
+
   </div>
-  
+
   <script src="secrets.js"></script>
   <script src="popup.js"></script>
 </body>
