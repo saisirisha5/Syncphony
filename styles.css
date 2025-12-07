@@ -33,6 +33,7 @@ h2 {
   font-weight: 700;
 
   background: linear-gradient(90deg, #ff9966, #ff5e62, #a66bff);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -212,7 +213,6 @@ h2 {
 .title-text {
   background: linear-gradient(90deg, #5cf4ff, #ff7bd3, #8e5cff);
 
-  /* ADD BOTH — this removes the VS Code warning */
   background-clip: text;
   -webkit-background-clip: text;
 

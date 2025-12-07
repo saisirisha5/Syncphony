@@ -674,7 +674,7 @@ function checkLoginStatus() {
   });
 }
 
-// Add this function at the end of the file for manual testing
+// for manual testing
 function manualTokenTest() {
   chrome.storage.local.get(['spotifyAccessToken'], function(result) {
     if (result.spotifyAccessToken) {
@@ -682,7 +682,6 @@ function manualTokenTest() {
       console.log("Token:", result.spotifyAccessToken);
       console.log("Token length:", result.spotifyAccessToken.length);
       
-      // Test with curl-like request
       fetch("https://api.spotify.com/v1/me", {
         method: 'GET',
         headers: {
@@ -713,7 +712,7 @@ function manualTokenTest() {
   });
 }
 
-// Make it available globally for console testing
+// Making it available globally for console testing
 window.manualTokenTest = manualTokenTest;
 
 // Debug function to test sync functionality
@@ -760,18 +759,9 @@ window.debugSync = async function() {
 function exchangeCodeForToken(code, redirectUri) {
   console.log("Exchanging code for token:", code.substring(0, 10) + "...");
   
-  // For Chrome extensions, we need to use a different approach
-  // Since we can't make server-side requests, we'll use a simple method
-  // This is a basic implementation - you might need to adjust based on your needs
-  
   const tokenUrl = "https://accounts.spotify.com/api/token";
   const clientId = spotifyClientId;
   
-  // Note: This won't work directly in the browser due to CORS
-  // You'll need to either:
-  // 1. Use a proxy server
-  // 2. Configure your Spotify app for implicit flow
-  // 3. Use a different approach
   
   console.log("Token exchange URL:", tokenUrl);
   console.log("Client ID:", clientId);
@@ -783,8 +773,7 @@ function exchangeCodeForToken(code, redirectUri) {
 // Update the code handling in loginSpotify
 function handleAuthorizationCode(code) {
   console.log("Handling authorization code:", code.substring(0, 10) + "...");
-  
-  // For now, we'll just store the code and ask user to implement exchange
+
   chrome.storage.local.set({ spotifyAuthCode: code }, () => {
     document.getElementById("status").textContent = "Spotify Code Received - Need Token Exchange";
     alert(`Authorization code received and stored.\n\nCode: ${code.substring(0, 10)}...\n\nYou need to implement token exchange or configure your Spotify app for implicit flow.`);
