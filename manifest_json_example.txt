@@ -6,15 +6,21 @@
   "version": "1.0",
   "description": "Sync your Spotify playlists to YouTube Music effortlessly.",
   "permissions": [
+     "sidePanel",
     "identity",
     "storage"
   ],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "128": "icons/icon128.png"
     }
   },
+    "side_panel": {
+    "default_path": "popup.html"
+  },
+   "background": {
+    "service_worker": "background.js"
+   },
   "oauth2": {
     "client_id": "GOOGLE_CLIENT_ID",
     "scopes": ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.force-ssl"]
