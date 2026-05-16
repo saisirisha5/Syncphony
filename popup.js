@@ -1,13 +1,51 @@
-document.getElementById("loginSpotify").addEventListener("click", loginSpotify);
-document.getElementById("loginYouTube").addEventListener("click", loginYouTube);
-document.addEventListener('DOMContentLoaded', function() {
-  checkLoginStatus();
-});
-
+// STATIC VARIABLES
 const spotifyClientId = SECRETS.SPOTIFY_CLIENT_ID;
 const googleClientId = SECRETS.GOOGLE_CLIENT_ID;
 
-// --- PKCE Utilities ---
+//API HELPER FUNCTION
+
+/* Fetch wrapper for Error Handling */
+async function apiCall(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Call Failed:", url, error);
+    throw error;
+  }
+}
+
+/* Auth Headers for API Requests*/
+function getAuthHeaders(token) {
+  return {
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  };
+}
+
+/* Testing token validity (by making API Requests) */
+async function testToken(token, service) {
+  const urls = {
+    spotify: "https://api.spotify.com/v1/me",
+    youtube: "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true"
+  };
+
+  try {
+    const data = await apiCall(urls[service], { headers: getAuthHeaders(token) });
+    console.log(`${service} token valid:`, data);
+    return true;
+  } catch (error) {
+    console.error(`${service} token invalid:`, error);
+    clearTokens();
+    return false;
+  }
+}
+
+/* PKCE UTILITIES */
 function base64urlencode(str) {
   return btoa(String.fromCharCode.apply(null, new Uint8Array(str)))
     .replace(/\+/g, '-')
@@ -35,43 +73,42 @@ function generateCodeVerifier(length = 128) {
   return verifier;
 }
 
-// --- Spotify PKCE Login ---
+/* Spotify PKCE Login  */
 async function loginSpotify() {
-  const clientId = spotifyClientId;
   const redirectUri = chrome.identity.getRedirectURL();
   const scopes = ["playlist-read-private", "playlist-read-collaborative"];
-
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
+ 
   // Store the codeVerifier for later token exchange
   chrome.storage.local.set({ spotifyPKCEVerifier: codeVerifier });
-
   const authUrl =
     `https://accounts.spotify.com/authorize` +
-    `?client_id=${clientId}` +
+    `?client_id=${spotifyClientId}` +
     `&response_type=code` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
     `&scope=${scopes.join("%20")}` +
     `&code_challenge_method=S256` +
     `&code_challenge=${codeChallenge}`;
 
-  console.log("Spotify PKCE Auth URL:", authUrl);
-  console.log("Redirect URI:", redirectUri);
+  // console.log("Spotify PKCE Auth URL:", authUrl);
+  // console.log("Redirect URI:", redirectUri);
 
   chrome.identity.launchWebAuthFlow({ url: authUrl, interactive: true }, (responseUrl) => {
     if (chrome.runtime.lastError || !responseUrl) {
-      console.error("Spotify login error:", chrome.runtime.lastError);
+      // console.error("Spotify login error:", chrome.runtime.lastError);
       alert("Spotify login failed: " + (chrome.runtime.lastError?.message || "Unknown error"));
       return;
     }
-    console.log("Spotify response URL:", responseUrl);
+    // console.log("Spotify response URL:", responseUrl);
     if (responseUrl.includes("error=")) {
       const urlParams = new URLSearchParams(responseUrl.split("?")[1] || responseUrl.split("#")[1]);
       const error = urlParams.get("error");
-      console.error("OAuth error:", error);
+      // console.error("OAuth error:", error);
       alert("Spotify login failed: " + error);
       return;
     }
+    
     const urlParams = new URLSearchParams(responseUrl.split("?code=")[1]);
     const code = urlParams.get("code") || responseUrl.split("?code=")[1];
     if (!code) {
@@ -788,4 +825,11 @@ document.addEventListener("DOMContentLoaded", () => {
       clearTokens();
     });
   }
+});
+
+//EVENT LISTENERS
+document.getElementById("loginSpotify").addEventListener("click", loginSpotify);
+document.getElementById("loginYouTube").addEventListener("click", loginYouTube);
+document.addEventListener('DOMContentLoaded', function() {
+  checkLoginStatus();
 });
